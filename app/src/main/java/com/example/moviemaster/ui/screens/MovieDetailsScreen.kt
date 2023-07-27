@@ -1,14 +1,11 @@
 package com.example.moviemaster.ui.screens
 
-import android.util.Log
+
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material3.Icon
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,12 +16,17 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
 import com.example.moviemaster.data.models.entities.Movie
 import com.example.moviemaster.data.models.response.MovieDetails
-import com.example.moviemaster.ui.ImageLoader.MovieImage
+import com.example.moviemaster.ui.imageLoader.MovieImage
+import com.example.moviemaster.ui.buttons.FavoritesButton
 import com.example.moviemaster.ui.theme.transparentBlack
 import kotlinx.coroutines.launch
 
 @Composable
-fun MovieDetailsScreen(movie: MovieDetails, viewModel: MainViewModel) {
+fun MovieDetailsScreen(
+    movie: MovieDetails,
+    viewModel: MainViewModel,
+    snackBarHostState: SnackbarHostState
+) {
 
     Box(
         modifier = Modifier
@@ -40,38 +42,39 @@ fun MovieDetailsScreen(movie: MovieDetails, viewModel: MainViewModel) {
 
             MovieImage(movie.posterPath)
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-                Icon(
-                    modifier = Modifier.clickable {
-                        val currentMovie = Movie(
-                            movie.backdropPath,
-                            movie.genreIds,
-                            movie.originalLanguage,
-                            movie.originalTitle,
-                            movie.overview,
-                            movie.popularity,
-                            movie.posterPath,
-                            movie.releaseDate,
-                            movie.title,
-                            movie.voteAverage,
-                            movie.voteCount,
-                            movie.id
-                        )
-                        viewModel.viewModelScope.launch {
-                            viewModel.getFavoriteMovieById(movie.id).collect { movie ->
+                FavoritesButton {
+                    val currentMovie = Movie(
+                        movie.backdropPath,
+                        movie.genreIds,
+                        movie.originalLanguage,
+                        movie.originalTitle,
+                        movie.overview,
+                        movie.popularity,
+                        movie.posterPath,
+                        movie.releaseDate,
+                        movie.title,
+                        movie.voteAverage,
+                        movie.voteCount,
+                        movie.id
+                    )
+                    viewModel.viewModelScope.launch {
+                        viewModel
+                            .getFavoriteMovieById(movie.id)
+                            .collect { movie ->
                                 if (movie != null) {
                                     viewModel.deleteMovieFromFavorites(currentMovie)
+                                    snackBarHostState.showSnackbar("${currentMovie.title} removed from favorites")
                                 } else {
                                     viewModel.saveMovieToFavorites(currentMovie)
+                                    snackBarHostState.showSnackbar("${currentMovie.title} added to favorites")
+//
                                 }
                             }
 
-                        }
 
-                    }.size(35.dp),
-                    imageVector = Icons.Default.Favorite,
-                    contentDescription = "Favorites",
-                    tint = Color.Yellow
-                )
+                    }
+
+                }
             }
             Text(
                 modifier = Modifier.padding(4.dp),

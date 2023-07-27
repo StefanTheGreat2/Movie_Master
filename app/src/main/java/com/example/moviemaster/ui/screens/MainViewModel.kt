@@ -20,6 +20,8 @@ class MainViewModel @Inject constructor(
     private val moviesRepository: MovieRepository
 ) : ViewModel() {
     val movies: MutableLiveData<Resource<MoviePage>> = MutableLiveData()
+    var categoryState = "Now Playing"
+    var page = 1
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -61,27 +63,27 @@ class MainViewModel @Inject constructor(
     }
 
 
-    fun nowPlaying() {
+    fun nowPlaying(page: Int = 1) {
         viewModelScope.launch(Dispatchers.IO) {
-            getMovies(moviesRepository.getNowPlaying(1))
+            getMovies(moviesRepository.getNowPlaying(page))
         }
     }
 
-    fun popular() {
+    fun popular(page: Int = 1) {
         viewModelScope.launch(Dispatchers.IO) {
-            getMovies(moviesRepository.getPopularMovies(1))
+            getMovies(moviesRepository.getPopularMovies(page))
         }
     }
 
-    fun topRated() {
+    fun topRated(page: Int = 1) {
         viewModelScope.launch(Dispatchers.IO) {
-            getMovies(moviesRepository.getTopRatedMovies(1))
+            getMovies(moviesRepository.getTopRatedMovies(page))
         }
     }
 
-    fun upcoming() {
+    fun upcoming(page: Int = 1) {
         viewModelScope.launch(Dispatchers.IO) {
-            getMovies(moviesRepository.getUpComingMovies(1))
+            getMovies(moviesRepository.getUpComingMovies(page))
         }
     }
 
@@ -97,12 +99,63 @@ class MainViewModel @Inject constructor(
         }
     }
 
+
     fun getFavoriteMovies(): Flow<List<Movie>> {
         return moviesRepository.loadAllMovies()
     }
 
     fun getFavoriteMovieById(id: Long) = moviesRepository.getFavoriteMovie(id)
+
+    fun nextPage() {
+        if (page < 100) {
+
+            when {
+                categoryState === "Now Playing" -> {
+                    page++
+                    nowPlaying(page)
+                }
+                categoryState === "Popular" -> {
+                    page++
+                    popular(page)
+                }
+                categoryState === "Upcoming" -> {
+                    page++
+                    upcoming(page)
+                }
+                categoryState === "TopRated" -> {
+                    page++
+                    topRated(page)
+                }
+            }
+
+        }
+    }
+
+    fun previousPage() {
+        if (page > 1) {
+            when {
+                categoryState === "Now Playing" -> {
+                    page--
+                    nowPlaying(page)
+                }
+                categoryState === "Popular" -> {
+                    page--
+                    popular(page)
+                }
+                categoryState === "Upcoming" -> {
+                    page--
+                    upcoming(page)
+                }
+                categoryState === "TopRated" -> {
+                    page--
+                    topRated(page)
+                }
+            }
+
+        }
+    }
 }
+
 
 
 

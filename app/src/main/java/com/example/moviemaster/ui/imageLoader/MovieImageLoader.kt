@@ -1,4 +1,4 @@
-package com.example.moviemaster.ui.ImageLoader
+package com.example.moviemaster.ui.imageLoader
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

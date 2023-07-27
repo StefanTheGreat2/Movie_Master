@@ -2,7 +2,6 @@ package com.example.moviemaster.data.repository
 
 import com.example.moviemaster.data.local.MovieDao
 import com.example.moviemaster.data.models.entities.Movie
-import com.example.moviemaster.data.models.response.MovieDetails
 import com.example.moviemaster.data.models.response.MoviePage
 import com.example.moviemaster.data.models.response.VideoListResponse
 import com.example.moviemaster.data.remote.MovieService
@@ -34,13 +33,6 @@ class MovieRepository @Inject constructor(
         return moviesApi.getUpcomingMovies(currentPage)
     }
 
-    suspend fun getVideoList(id: Long): Response<VideoListResponse> {
-        return moviesApi.getVideos(id)
-    }
-
-    suspend fun getMovieDetails(id: Long): Response<MovieDetails> {
-        return moviesApi.getMovieDetails(id)
-    }
 
     fun loadAllMovies(): Flow<List<Movie>> = movieDao.getAllMovies().flowOn(Dispatchers.IO)
 

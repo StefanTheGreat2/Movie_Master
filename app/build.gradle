@@ -88,6 +88,8 @@ dependencies {
 
     //live data
     implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
+    //constraint
+    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
 }
 kapt {
     correctErrorTypes = true
