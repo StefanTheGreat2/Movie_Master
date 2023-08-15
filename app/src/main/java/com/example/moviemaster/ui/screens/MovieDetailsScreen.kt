@@ -14,10 +14,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
+import coil.ImageLoader
 import com.example.moviemaster.data.models.entities.Movie
 import com.example.moviemaster.data.models.response.MovieDetails
-import com.example.moviemaster.ui.imageLoader.MovieImage
 import com.example.moviemaster.ui.buttons.FavoritesButton
+import com.example.moviemaster.ui.network_image.NetworkImage
 import com.example.moviemaster.ui.theme.transparentBlack
 import kotlinx.coroutines.launch
 
@@ -25,7 +26,8 @@ import kotlinx.coroutines.launch
 fun MovieDetailsScreen(
     movie: MovieDetails,
     viewModel: MainViewModel,
-    snackBarHostState: SnackbarHostState
+    snackBarHostState: SnackbarHostState,
+    imageLoader: ImageLoader
 ) {
 
     Box(
@@ -40,7 +42,7 @@ fun MovieDetailsScreen(
                 .verticalScroll(rememberScrollState())
         ) {
 
-            MovieImage(movie.posterPath)
+            NetworkImage(movie.posterPath, imageLoader)
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                 FavoritesButton {
                     val currentMovie = Movie(
@@ -67,7 +69,6 @@ fun MovieDetailsScreen(
                                 } else {
                                     viewModel.saveMovieToFavorites(currentMovie)
                                     snackBarHostState.showSnackbar("${currentMovie.title} added to favorites")
-//
                                 }
                             }
 

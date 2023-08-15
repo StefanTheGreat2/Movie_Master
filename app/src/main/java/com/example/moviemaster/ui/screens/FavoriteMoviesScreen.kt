@@ -19,15 +19,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.moviemaster.ui.imageLoader.MovieImage
+import coil.ImageLoader
 import com.example.moviemaster.ui.buttons.PopBackButton
+import com.example.moviemaster.ui.network_image.NetworkImage
 import com.example.moviemaster.ui.theme.transparentBlack
 
 
 @Composable
-fun FavoriteMoviesScreen(navController: NavController, mainViewModel: MainViewModel) {
+fun FavoriteMoviesScreen(
+    navController: NavController, mainViewModel: MainViewModel, imageLoader: ImageLoader
+) {
     val favoriteMovies = mainViewModel.getFavoriteMovies().collectAsState(initial = emptyList())
-
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         favoriteMovies.value.forEach { movie ->
             Box(
@@ -41,7 +43,7 @@ fun FavoriteMoviesScreen(navController: NavController, mainViewModel: MainViewMo
                     ), contentAlignment = Alignment.Center
             ) {
                 Column(modifier = Modifier.padding(4.dp)) {
-                    MovieImage(posterPath = movie.posterPath)
+                    NetworkImage(posterPath = movie.posterPath, imageLoader)
                     Text(text = movie.title, fontSize = 24.sp, color = Color.White)
                     Text(text = movie.overview, color = Color.LightGray)
                 }

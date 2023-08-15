@@ -21,6 +21,9 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file("local.properties").newDataInputStream())
+        buildConfigField "String","API_KEY","\"${properties.getProperty("API_KEY")}\""
     }
 
     buildTypes {
@@ -63,8 +66,10 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
+
     //navigation
     implementation "androidx.navigation:navigation-compose:2.5.1"
+
     //room
     implementation "androidx.room:room-runtime:2.2.5"
     kapt "androidx.room:room-compiler:2.2.5"
@@ -83,11 +88,12 @@ dependencies {
     implementation "com.squareup.okhttp3:logging-interceptor:4.7.2"
 
     //coil
-    implementation("io.coil-kt:coil:2.3.0")
-    implementation("io.coil-kt:coil-compose:2.3.0")
+    implementation("io.coil-kt:coil:2.4.0")
+    implementation("io.coil-kt:coil-compose:2.4.0")
 
     //live data
     implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
+
     //constraint
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
 }

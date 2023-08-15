@@ -19,15 +19,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
+import coil.ImageLoader
+import coil.imageLoader
+import coil.util.DebugLogger
 import com.example.moviemaster.ui.navigation.NavigationHost
 import com.example.moviemaster.ui.theme.MovieMasterTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -58,6 +63,8 @@ class MainActivity : ComponentActivity() {
     private fun MainApp() {
         val navController = rememberNavController()
         val snackBarHostState = remember { SnackbarHostState() }
+       val imageLoader: ImageLoader =
+        LocalContext.current.imageLoader.newBuilder().logger(DebugLogger()).build()
         Scaffold(
             snackbarHost = {
                 SnackbarHost(hostState = snackBarHostState)
@@ -70,7 +77,7 @@ class MainActivity : ComponentActivity() {
                     .background(
                         Color.Black.copy(alpha = 0.8f)
                     )
-            ) { NavigationHost(navController = navController, snackbarHostState = snackBarHostState) }
+            ) { NavigationHost(navController = navController, snackBarHostState = snackBarHostState,imageLoader=imageLoader) }
         }
     }
 

@@ -1,89 +1,66 @@
 package com.example.moviemaster.ui.screens
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moviemaster.common.resource.Resource
 import com.example.moviemaster.data.models.entities.Movie
-import com.example.moviemaster.data.models.response.MoviePage
+import com.example.moviemaster.data.models.response.MoviePageResponse
 import com.example.moviemaster.data.repository.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import retrofit2.Response
-import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val moviesRepository: MovieRepository
 ) : ViewModel() {
-    val movies: MutableLiveData<Resource<MoviePage>> = MutableLiveData()
-    var categoryState = "Now Playing"
-    var page = 1
+    private val movies = MutableStateFlow<Resource<MoviePageResponse>?>(Resource.Loading())
+    val moviesState: StateFlow<Resource<MoviePageResponse>?> = movies
+    private var categoryState = "Now Playing"
+    private var page = 1
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            getMovies(moviesRepository.getNowPlaying(1))
-        }
-
-
-    }
-
-    private fun getMovies(response: Response<MoviePage>) {
-        safeMoviesCall(movies, response)
-    }
-
-    private fun safeMoviesCall(
-        moviesData: MutableLiveData<Resource<MoviePage>>,
-        response: Response<MoviePage>
-    ) {
-        moviesData.postValue(Resource.Loading())
-        try {
-            moviesData.postValue(handleResp(response))
-
-
-        } catch (ex: Exception) {
-            when (ex) {
-                is IOException -> moviesData.postValue(Resource.Error("Network Failure"))
-                else -> moviesData.postValue(Resource.Error("Conversion Error"))
-            }
+            nowPlaying()
         }
     }
-
-
-    private fun handleResp(response: Response<MoviePage>): Resource<MoviePage> {
-        if (response.isSuccessful) {
-            response.body()?.let { resultResponse ->
-                return Resource.Success(resultResponse)
-            }
-        }
-        return Resource.Error(response.message())
-    }
-
 
     fun nowPlaying(page: Int = 1) {
         viewModelScope.launch(Dispatchers.IO) {
-            getMovies(moviesRepository.getNowPlaying(page))
+
+            moviesRepository.getNowPlaying(page).collect {
+                movies.value = it
+            }
         }
     }
 
     fun popular(page: Int = 1) {
         viewModelScope.launch(Dispatchers.IO) {
-            getMovies(moviesRepository.getPopularMovies(page))
+
+            moviesRepository.getPopularMovies(page).collect {
+                movies.value = it
+            }
         }
     }
 
     fun topRated(page: Int = 1) {
         viewModelScope.launch(Dispatchers.IO) {
-            getMovies(moviesRepository.getTopRatedMovies(page))
+
+            moviesRepository.getTopRatedMovies(page).collect {
+                movies.value = it
+            }
         }
     }
 
     fun upcoming(page: Int = 1) {
         viewModelScope.launch(Dispatchers.IO) {
-            getMovies(moviesRepository.getUpComingMovies(page))
+            moviesRepository.getUpcomingMovies(page).collect {
+                movies.value = it
+            }
         }
     }
 

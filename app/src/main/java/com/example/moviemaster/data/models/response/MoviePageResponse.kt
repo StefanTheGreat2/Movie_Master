@@ -2,7 +2,7 @@ package com.example.moviemaster.data.models.response
 
 import com.google.gson.annotations.SerializedName
 
-data class MoviePage(
+data class MoviePageResponse(
     @SerializedName("page")
     val page: Long,
     @SerializedName("results")

@@ -14,8 +14,9 @@ class Convertor {
         return Gson().fromJson(value, listType)
     }
 
+
     @TypeConverter
-    fun fromListLisr(list: List<Long>): String {
+    fun fromList(list: List<Long>): String {
         val gson = Gson()
         return gson.toJson(list)
     }
